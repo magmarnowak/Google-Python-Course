@@ -1,2 +1,2 @@
-# Google-Python-Course
-This repository includes my solutions to the exercises from the Google Python Course (https://developers.google.com/edu/python/)
+# Google-Python-Class
+This repository includes my solutions to the exercises from Google's Python Class (https://developers.google.com/edu/python/)
