@@ -8,6 +8,7 @@
 
 import sys
 import re
+from pprint import pprint as pp
 
 """Baby Names exercise
 
@@ -41,7 +42,35 @@ def extract_names(filename):
   ['2006', 'Aaliyah 91', Aaron 57', 'Abagail 895', ' ...]
   """
   # +++your code here+++
-  return
+  with open(filename, 'rU') as f:
+     names_file = f.read()
+
+  final_list = []
+  # extract the year
+  year = (re.search(r'Popularity in (\d\d\d\d)', names_file)).group(1)
+  # extract the rank and names into a list
+  names_list = re.findall(r'<td>(\d+)</td><td>(\w+)</td><td>(\w+)</td>', names_file)
+  # get the names data into a dict
+  names_dict = {}
+  for x in names_list:
+      # first add all the male names to the dictionary
+      names_dict[x[1]] = x[0]
+  # then add the female ones, checking whether the name already exsists as a key
+  for x in names_list:
+      if x[2] in names_dict.keys():
+          #if yes, then keep the name with the lower rank
+          if names_dict[x[2]] >= x[0]:
+              pass
+          else:
+              # otherwise just add the name
+              names_dict[x[2]] = x[0]
+  # build the final list
+  for x in names_dict:
+      final_list.append(x + ' ' + names_dict[x])
+  final_list = sorted(final_list)
+  # insert the year as the first element in the final_list
+  final_list.insert(0,year)
+  return final_list
 
 
 def main():
@@ -49,6 +78,7 @@ def main():
   # Make a list of command line arguments, omitting the [0] element
   # which is the script itself.
   args = sys.argv[1:]
+  pp(args)
 
   if not args:
     print 'usage: [--summaryfile] file [file ...]'
@@ -62,7 +92,13 @@ def main():
 
   # +++your code here+++
   # For each filename, get the names, then either print the text output
-  # or write it to a summary file
-  
+  # for x in args:
+  #     if summary:
+  #         with open(x +'.summary', 'w') as f:
+  #             summaryfile = f.write(extract_names(x))
+  #     else:
+  #         pp(extract_names(x))
+  pp(extract_names(args[0]))
+
 if __name__ == '__main__':
   main()
