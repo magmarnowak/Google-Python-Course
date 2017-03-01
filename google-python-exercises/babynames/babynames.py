@@ -91,14 +91,13 @@ def main():
     del args[0]
 
   # +++your code here+++
-  # For each filename, get the names, then either print the text output
-  # for x in args:
-  #     if summary:
-  #         with open(x +'.summary', 'w') as f:
-  #             summaryfile = f.write(extract_names(x))
-  #     else:
-  #         pp(extract_names(x))
-  pp(extract_names(args[0]))
+  # For each filename, get the names, then either print the text output or write it to a file
+  for x in args:
+      if summary:
+          with open(x +'.summary', 'w') as f:
+              summaryfile = f.write(str(extract_names(x)))
+      else:
+          pp(extract_names(x))
 
 if __name__ == '__main__':
   main()
