@@ -9,6 +9,8 @@
 import sys
 import re
 from pprint import pprint as pp
+from glob import glob
+
 
 """Baby Names exercise
 
@@ -42,29 +44,23 @@ def extract_names(filename):
   ['2006', 'Aaliyah 91', Aaron 57', 'Abagail 895', ' ...]
   """
   # +++your code here+++
+
   with open(filename, 'rU') as f:
      names_file = f.read()
 
-  final_list = []
   # extract the year
   year = (re.search(r'Popularity in (\d\d\d\d)', names_file)).group(1)
   # extract the rank and names into a list
   names_list = re.findall(r'<td>(\d+)</td><td>(\w+)</td><td>(\w+)</td>', names_file)
-  # get the names data into a dict
+  # get the names data into a (name: rank) dict
+  # in case of duplicates, retain higher ranking ones
   names_dict = {}
   for x in names_list:
-      # first add all the male names to the dictionary
-      names_dict[x[1]] = x[0]
-  # then add the female ones, checking whether the name already exsists as a key
-  for x in names_list:
-      if x[2] in names_dict.keys():
-          #if yes, then keep the name with the lower rank
-          if names_dict[x[2]] >= x[0]:
-              pass
-          else:
-              # otherwise just add the name
-              names_dict[x[2]] = x[0]
+      if x[1] not in names_dict.keys(): names_dict[x[1]] = x[0]
+      if x[2] not in names_dict.keys(): names_dict[x[2]] = x[0]
+
   # build the final list
+  final_list = []
   for x in names_dict:
       final_list.append(x + ' ' + names_dict[x])
   final_list = sorted(final_list)
@@ -78,7 +74,7 @@ def main():
   # Make a list of command line arguments, omitting the [0] element
   # which is the script itself.
   args = sys.argv[1:]
-  pp(args)
+
 
   if not args:
     print 'usage: [--summaryfile] file [file ...]'
@@ -92,12 +88,17 @@ def main():
 
   # +++your code here+++
   # For each filename, get the names, then either print the text output or write it to a file
-  for x in args:
+
+  for filename in glob(args[0]):
       if summary:
-          with open(x +'.summary', 'w') as f:
-              summaryfile = f.write(str(extract_names(x)))
+          with open(filename +'.summary', 'w') as f:
+              for element in extract_names(filename):
+                  summaryfile = f.write(element+'\n')
       else:
-          pp(extract_names(x))
+          pp(extract_names(filename))
 
 if __name__ == '__main__':
   main()
+
+# to compare summary files across years in powershell:
+# Get-Content *.summary | Select-String -Pattern ('name')
