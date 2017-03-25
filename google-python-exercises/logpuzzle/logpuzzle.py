@@ -24,8 +24,18 @@ def read_urls(filename):
   extracting the hostname from the filename itself.
   Screens out duplicate urls and returns the urls sorted into
   increasing order."""
-  # +++your code here+++
-  
+  hostname = (re.search(r'_(.+)', filename)).group()
+  hostname = hostname[1:]
+  with open(filename, 'rU') as f:
+     log_file = f.read()
+  img_urls = sorted(re.findall(r'GET\s(.+puzzle.+jpg)', log_file))
+  full_urls = []
+  for url in img_urls:
+      full_url = 'http://' + hostname + url
+      if full_url not in full_urls:
+          full_urls.append(full_url)
+  return full_urls
+
 
 def download_images(img_urls, dest_dir):
   """Given the urls already in the correct order, downloads
@@ -35,8 +45,19 @@ def download_images(img_urls, dest_dir):
   with an img tag to show each local image file.
   Creates the directory if necessary.
   """
-  # +++your code here+++
-  
+  if not os.path.exists(dest_dir):
+      os.mkdir(dest_dir)
+  index_file = open('index.html', 'a+')
+  index_file.write('<html><body>\n')
+  i = 0
+  for link in img_urls:
+      img_filename = 'img'+str(i)
+      urllib.urlretrieve(link, img_filename)
+      index_file.write('<img src="%s">' % img_filename)
+      i +=1
+  index_file.write('</body></html>')
+  index_file.close()
+
 
 def main():
   args = sys.argv[1:]
